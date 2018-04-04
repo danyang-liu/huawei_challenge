@@ -92,8 +92,8 @@ def predict_vm(ecs_lines, input_lines):
                 break
         if can_put_flavor == False:
             server_ins = server.Server(server_infor[0], server_infor[1], server_infor[2])
+            server_ins.put_flavor(flavor_list[f], flavor_cpu[flavor_list[f] - 1], flavor_mem[flavor_list[f] - 1])
             server_list.append(server_ins)
-            server_list[-1].put_flavor(flavor_list[f], flavor_cpu[flavor_list[f] - 1], flavor_mem[flavor_list[f] - 1])
 
     result.append(str(len(server_list)))
     for index in range(len(server_list)):
