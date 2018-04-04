@@ -14,6 +14,7 @@ def main():
     ecsDataPath = sys.argv[1]
     inputFilePath = sys.argv[2]
     resultFilePath = sys.argv[3]
+
     # ecsDataPath = '../../data/TrainData_2015.1.1_2015.2.19.txt'
     # inputFilePath = '../../data/input_5flavors_cpu_7days.txt'
     # resultFilePath = '../../data/result.txt'
