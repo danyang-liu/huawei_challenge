@@ -56,7 +56,7 @@ def predict_vm(ecs_lines, input_lines):
     for index in range(flavor_type_num):
         result.append(str(flavor_type[index]) + ' ' + str(predict_flavor_num[index]))
 
-    result.append('\n')
+    result.append('')
     # put
 
     result.append(str(total_flavors_num))
