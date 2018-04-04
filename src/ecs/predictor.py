@@ -1,6 +1,10 @@
 # coding=utf-8
 
 import datetime
+import server
+
+flavor_mem = [1,2,4,2,4,8,4,8,16,8,16,32,16,32,64]
+flavor_cpu = [1,1,1,2,2,2,4,4,4,8,8,8,16,16,16]
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
@@ -57,14 +61,47 @@ def predict_vm(ecs_lines, input_lines):
         result.append(str(flavor_type[index]) + ' ' + str(predict_flavor_num[index]))
 
     result.append('')
-    # put
 
-    result.append(str(total_flavors_num))
-    i_index = 1
-    for index in range(flavor_type_num):
-        for type_index in range(predict_flavor_num[index]):
-            result.append(str(i_index)+' '+flavor_type[index]+' '+str(1))
-            i_index = i_index + 1
+    # get flavor list
+    flavor_list = []
+    for f_type in range(len(flavor_type)):
+        for i_f_type in range(predict_flavor_num[f_type]):
+            flavor_list.append(int(flavor_type[f_type][6:]))
+
+
+    # # put navie
+    # result.append(str(total_flavors_num))
+    # i_index = 1
+    # for index in range(flavor_type_num):
+    #     for type_index in range(predict_flavor_num[index]):
+    #         result.append(str(i_index)+' '+flavor_type[index]+' '+str(1))
+    #         i_index = i_index + 1
+
+
+    #put 首次适应
+    server_list = []
+
+    server_ins = server.Server(server_infor[0],server_infor[1],server_infor[2])
+    server_list.append(server_ins)
+
+    for f in range(len(flavor_list)):
+        can_put_flavor = False
+        for i in range(len(server_list)):
+            if server_list[i].put_flavor(flavor_list[f],flavor_cpu[flavor_list[f]-1],flavor_mem[flavor_list[f]-1]):
+                can_put_flavor = True
+                break
+        if can_put_flavor == False:
+            server_ins = server.Server(server_infor[0], server_infor[1], server_infor[2])
+            server_list.append(server_ins)
+
+    result.append(str(len(server_list)))
+    for index in range(len(server_list)):
+        flavor_result_list = ''
+        for i in range(len(server_list[index].flavor_num)):
+            if server_list[index].flavor_num[i] > 0:
+                flavor_result_list = flavor_result_list + 'flavor' + str(i+1) + ' ' + str(server_list[index].flavor_num[i]) + ' '
+
+        result.append(str(index+1)+' '+flavor_result_list)
 
 
     return result
