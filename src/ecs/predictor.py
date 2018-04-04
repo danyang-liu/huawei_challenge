@@ -100,7 +100,7 @@ def predict_vm(ecs_lines, input_lines):
         for i in range(len(server_list[index].flavor_num)):
             if server_list[index].flavor_num[i] > 0:
                 flavor_result_list = flavor_result_list + 'flavor' + str(i+1) + ' ' + str(server_list[index].flavor_num[i]) + ' '
-
+        flavor_result_list = flavor_result_list[:-1]
         result.append(str(index+1)+' '+flavor_result_list)
 
 
