@@ -52,7 +52,7 @@ def predict_vm(ecs_lines, input_lines):
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
         for item in esc_data:
-            if item[1] == flavor_type[index] and item[2]+datetime.timedelta(predict_data_delta+1)>predict_date_start and item[2]+datetime.timedelta(predict_data_delta+1)<predict_data_end:
+            if item[1] == flavor_type[index] and item[2]+datetime.timedelta(predict_data_delta+1)>=predict_date_start and item[2]+datetime.timedelta(predict_data_delta+1)<=predict_data_end:
                 predict_flavor_num[index] = predict_flavor_num[index] + 1
 
     for item in predict_flavor_num:
