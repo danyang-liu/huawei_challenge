@@ -41,20 +41,32 @@ def predict_vm(ecs_lines, input_lines):
     date_start_split = input_lines[flavor_type_num+6].split()[0]
     date_end_split = input_lines[flavor_type_num+7].split()[0]
     predict_date_start = datetime.date(int(date_start_split.split('-')[0]),int(date_start_split.split('-')[1]),int(date_start_split.split('-')[2]))
-    predict_data_end = datetime.date(int(date_end_split.split('-')[0]),int(date_end_split.split('-')[1]),int(date_end_split.split('-')[2]))
+    predict_date_end = datetime.date(int(date_end_split.split('-')[0]),int(date_end_split.split('-')[1]),int(date_end_split.split('-')[2]))
 
-
-    #predict
-    total_flavors_num = 0
-
-    predict_data_delta = (predict_data_end - predict_date_start).days
+    predict_data_delta = (predict_date_end - predict_date_start).days
     predict_flavor_num = []
+
+    # #predict 取前一星期数据
+    # for index in range(flavor_type_num):
+    #     predict_flavor_num.append(0)
+    #     for item in esc_data:
+    #         if item[1] == flavor_type[index] and item[2]+datetime.timedelta(predict_data_delta+1)>=predict_date_start and item[2]+datetime.timedelta(predict_data_delta+1)<=predict_date_end:
+    #             predict_flavor_num[index] = predict_flavor_num[index] + 1
+
+    #predict 权重法
+    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
         for item in esc_data:
-            if item[1] == flavor_type[index] and item[2]+datetime.timedelta(predict_data_delta+1)>=predict_date_start and item[2]+datetime.timedelta(predict_data_delta+1)<=predict_data_end:
-                predict_flavor_num[index] = predict_flavor_num[index] + 1
+            if item[1] == flavor_type[index]:
+                predict_flavor_num[index] = predict_flavor_num[index] + 2-float((predict_date_start-item[2]).days)/float(train_days_delta)
 
+    for index in range(flavor_type_num):
+        predict_flavor_num[index] = int((predict_flavor_num[index]*float((predict_date_end-predict_date_start).days+1))/train_days_delta)
+
+
+    #predict 输出
+    total_flavors_num = 0
     for item in predict_flavor_num:
         total_flavors_num = total_flavors_num + item
 
