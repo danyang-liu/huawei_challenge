@@ -8,7 +8,7 @@ class Server(object):
         self.flavor_num = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
     def put_flavor(self,flavor_type,cpu_size,mem_size):
-        if cpu_size>self.free_cpu_size or mem_size>self.free_cpu_size:
+        if cpu_size>self.free_cpu_size or mem_size>self.free_mem_size:
             return False
         else:
             self.flavor_num[flavor_type-1] = self.flavor_num[flavor_type-1] + 1
