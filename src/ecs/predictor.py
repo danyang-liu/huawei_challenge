@@ -111,7 +111,7 @@ def predict_vm(ecs_lines, input_lines):
 
     T = 100
     Tmin = 1
-    r = 0.999
+    r = 0.99
     minserver = total_flavors_num
     best_server_list = []
     flavor_dice = range(total_flavors_num)
