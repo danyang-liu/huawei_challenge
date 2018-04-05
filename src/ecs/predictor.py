@@ -106,7 +106,6 @@ def predict_vm(ecs_lines, input_lines):
     #     flavor_result_list = flavor_result_list[:-1]
     #     result.append(str(index+1)+' '+flavor_result_list)
 
-
     # put 模拟退火算法
 
     T = 100
@@ -164,3 +163,77 @@ def predict_vm(ecs_lines, input_lines):
 
 
     return result
+
+
+def test_vm(test_infor_array,input_lines,predic_result):
+
+    test_data = []
+    for item in test_infor_array:
+        item_split = item.split('\t')
+        item_split[2] = item_split[2].split()[0]
+        item_split[2] = datetime.date(int(item_split[2].split('-')[0]), int(item_split[2].split('-')[1]),
+                                      int(item_split[2].split('-')[2]))
+        test_data.append(item_split)
+
+    server_infor = []
+    server_infor.append(int(input_lines[0].split()[0]))
+    server_infor.append(int(input_lines[0].split()[1]))
+    server_infor.append(int(input_lines[0].split()[2]))
+
+    flavor_type_num = int(input_lines[2])
+    flavor_type = []
+
+    for i in range(flavor_type_num):
+        flavor_type.append(input_lines[3 + i].split()[0])
+
+    resource_type = input_lines[flavor_type_num + 4].split()[0]
+
+    #统计test里 真实服务器数量
+    flavor_num_ground_truth = []
+    for i in range(len(flavor_type)):
+        flavor_num_ground_truth.append(0)
+    for i in range(len(flavor_type)):
+        for j in range(len(test_data)):
+            if flavor_type[i] == test_data[j][1]:
+                flavor_num_ground_truth[i] = flavor_num_ground_truth[i]+1;
+
+    # 解析predict_result 函数
+    predict_total_vm = int(predic_result[0])
+    predict_flavor_type = []
+    predict_flavor_num = []
+    for i in range(len(flavor_type)):
+        predict_flavor_type.append(predic_result[i+1].split()[0])
+        predict_flavor_num.append(int(predic_result[i+1].split()[1]))
+
+    #计算score
+    y_score_error = []
+    y_score_truth = []
+    y_score_predict = []
+    for i in range(len(flavor_type)):
+        y_score_error.append(0.0)
+        y_score_truth.append(0.0)
+        y_score_predict.append(0.0)
+    for i in range(len(flavor_type)):
+        y_score_error[i] = y_score_error[i] + math.pow((flavor_num_ground_truth[i]-predict_flavor_num[i]),2)
+        y_score_truth[i] = y_score_truth[i] + math.pow(flavor_num_ground_truth[i],2)
+        y_score_predict[i] = y_score_predict[i] + math.pow(predict_flavor_num[i],2)
+        pass
+
+    predict_score = 1-(math.sqrt(math.fsum(y_score_error)/len(flavor_type))/(math.sqrt(math.fsum(y_score_truth)/len(flavor_type))+math.sqrt(math.fsum(y_score_predict)/len(flavor_type))))
+
+    put_score = 0.0
+    if resource_type == 'CPU':
+        total_cpu_resource = server_infor[0]*int(predic_result[len(flavor_type)+2])
+        total_cpu_usage = 0
+        for i in range(len(flavor_type)):
+            total_cpu_usage = total_cpu_usage + flavor_cpu[int(predict_flavor_type[i][6:])-1]*predict_flavor_num[i]
+        put_score = float(total_cpu_usage)/float(total_cpu_resource)
+    else:
+        total_mem_resource = server_infor[0] * int(predic_result[len(flavor_type) + 2])
+        total_mem_usage = 0
+        for i in range(len(flavor_type)):
+            total_mem_usage = total_mem_usage + flavor_mem[int(predict_flavor_type[i][6:])-1] * predict_flavor_num[i]
+        put_score = float(total_mem_usage) / float(total_mem_resource)
+
+    final_score = predict_score*put_score*100
+    return final_score

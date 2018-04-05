@@ -18,6 +18,7 @@ def main():
     # ecsDataPath = '../../data/TrainData_2015.1.1_2015.2.19.txt'
     # inputFilePath = '../../data/input_5flavors_cpu_7days.txt'
     # resultFilePath = '../../data/result.txt'
+    # testFilePath = '../../data/TestData_2015.2.20_2015.2.27.txt'
 
 
     ecs_infor_array = read_lines(ecsDataPath)
@@ -30,6 +31,13 @@ def main():
     else:
         predic_result.append("NA")
         write_result(predic_result, resultFilePath)
+
+    # #test
+    # test_infor_array = read_lines(testFilePath)
+    # testresult = predictor.test_vm(test_infor_array,input_file_array,predic_result)
+    # print testresult
+
+
     print 'main function end.'
 
 
