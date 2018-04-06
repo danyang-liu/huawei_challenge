@@ -20,6 +20,10 @@ def main():
     # resultFilePath = '../../data/result.txt'
     # testFilePath = '../../data/TestData_2015.2.20_2015.2.27.txt'
 
+    # ecsDataPath = '../../data/train_2016_1.txt'
+    # inputFilePath = '../../data/input_2.txt'
+    # resultFilePath = '../../data/result.txt'
+    # testFilePath = '../../data/test_2016_1.txt'
 
     ecs_infor_array = read_lines(ecsDataPath)
     input_file_array = read_lines(inputFilePath)
