@@ -72,7 +72,7 @@ def predict_vm(ecs_lines, input_lines):
 
     #predict 统计周末周中权重
 
-    train_days_delta = 7
+    train_days_delta = 6
     #统计predict中周中周末数
     predict_weekday_count = 0
     predict_weekend_count = 0
@@ -90,8 +90,8 @@ def predict_vm(ecs_lines, input_lines):
         else:
             train_weekend_count += 1
 
-    predict_weekday_weekend_index = float(predict_weekend_count+2*predict_weekday_count)/float(predict_weekend_count+predict_weekday_count)
-    train_weekday_weekend_index = float(train_weekend_count + 2 * train_weekday_count) / float(train_weekend_count + train_weekday_count)
+    predict_weekday_weekend_index = float(predict_weekend_count+3*predict_weekday_count)/float(predict_weekend_count+predict_weekday_count)
+    train_weekday_weekend_index = float(train_weekend_count + 3 * train_weekday_count) / float(train_weekend_count + train_weekday_count)
 
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
