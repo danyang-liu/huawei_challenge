@@ -90,6 +90,8 @@ def predict_vm(ecs_lines, input_lines):
         else:
             train_weekend_count += 1
 
+    predict_weekday_weekend_index = float(predict_weekend_count+2*predict_weekday_count)/float(predict_weekend_count+predict_weekday_count)
+    train_weekday_weekend_index = float(train_weekend_count + 2 * train_weekday_count) / float(train_weekend_count + train_weekday_count)
 
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
@@ -104,7 +106,7 @@ def predict_vm(ecs_lines, input_lines):
     for index in range(flavor_type_num):
         predict_flavor_num[index] = (predict_flavor_num[index] * float(predict_data_delta + 1)) / train_days_delta
 #        predict_flavor_num[index] = int(predict_flavor_num[index] * (float(predict_weekday_count)/(float(predict_weekday_count+predict_weekend_count))) / (float(train_weekday_count)/(float(train_weekday_count+train_weekend_count))))
-        predict_flavor_num[index] = int(predict_flavor_num[index] * float(2*predict_weekday_count + predict_weekend_count)/float(2*train_weekday_count+train_weekend_count))
+        predict_flavor_num[index] = int(predict_flavor_num[index]*predict_weekday_weekend_index/train_weekday_weekend_index)
 
     #predict 输出
     total_flavors_num = 0
