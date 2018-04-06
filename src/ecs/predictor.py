@@ -84,7 +84,7 @@ def predict_vm(ecs_lines, input_lines):
         else:
             predict_weekend_count += 1
     #统计train中周中周末数
-    for i in range(train_days_delta):
+    for i in range(train_days_delta+1):
         if (predict_date_start-datetime.timedelta(train_days_delta+1-i)).isoweekday()<6:
             train_weekday_count += 1
         else:
