@@ -72,7 +72,7 @@ def predict_vm(ecs_lines, input_lines):
 
     #predict 统计周末周中权重
 
-    train_days_delta = 6
+    train_days_delta = 7
     #统计predict中周中周末数
     predict_weekday_count = 0
     predict_weekend_count = 0
