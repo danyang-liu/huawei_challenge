@@ -53,21 +53,57 @@ def predict_vm(ecs_lines, input_lines):
     #         if item[1] == flavor_type[index] and item[2]+datetime.timedelta(predict_data_delta+1)>=predict_date_start and item[2]+datetime.timedelta(predict_data_delta+1)<=predict_date_end:
     #             predict_flavor_num[index] = predict_flavor_num[index] + 1
 
-    #predict 权重法
-#    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
-    train_days_delta = 5
+#     #predict 权重法
+# #    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
+#     train_days_delta = 6
+#     for index in range(flavor_type_num):
+#         predict_flavor_num.append(0)
+#         for item in esc_data:
+#             if item[1] == flavor_type[index] and item[2]+datetime.timedelta(train_days_delta)>=predict_date_start:
+#                 predict_flavor_num[index] = predict_flavor_num[index] + 1
+# #                predict_flavor_num[index] = predict_flavor_num[index] + 2-1.9*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
+#                 test_date = item[2]
+#                 test1 = float((predict_date_start - item[2]).days)
+#                 test = float((predict_date_start-item[2]).days)/float(train_days_delta)
+#                 pass
+#     for index in range(flavor_type_num):
+#         predict_flavor_num[index] = int((predict_flavor_num[index]*float(predict_data_delta+1))/train_days_delta)
+
+
+    #predict 统计周末周中权重
+
+    train_days_delta = 6
+    #统计predict中周中周末数
+    predict_weekday_count = 0
+    predict_weekend_count = 0
+    train_weekday_count = 0
+    train_weekend_count = 0
+    for i in range(predict_data_delta+1):
+        if (predict_date_start+datetime.timedelta(i)).isoweekday()<6:
+            predict_weekday_count += 1
+        else:
+            predict_weekend_count += 1
+    #统计train中周中周末数
+    for i in range(train_days_delta):
+        if (predict_date_start-datetime.timedelta(train_days_delta+1-i)).isoweekday()<6:
+            train_weekday_count += 1
+        else:
+            train_weekend_count += 1
+
+
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
         for item in esc_data:
-            if item[1] == flavor_type[index] and item[2]+datetime.timedelta(train_days_delta)>=predict_date_start:
+            if item[1] == flavor_type[index] and item[2] + datetime.timedelta(train_days_delta) >= predict_date_start:
                 predict_flavor_num[index] = predict_flavor_num[index] + 1
-#                predict_flavor_num[index] = predict_flavor_num[index] + 2-1.9*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
+                #                predict_flavor_num[index] = predict_flavor_num[index] + 2-1.9*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
                 test_date = item[2]
                 test1 = float((predict_date_start - item[2]).days)
-                test = float((predict_date_start-item[2]).days)/float(train_days_delta)
+                test = float((predict_date_start - item[2]).days) / float(train_days_delta)
                 pass
     for index in range(flavor_type_num):
-        predict_flavor_num[index] = int((predict_flavor_num[index]*float(predict_data_delta+1))/train_days_delta)
+        predict_flavor_num[index] = (predict_flavor_num[index] * float(predict_data_delta + 1)) / train_days_delta
+        predict_flavor_num[index] = int(predict_flavor_num[index] * (float(predict_weekday_count)/(float(predict_weekday_count+predict_weekend_count))) / (float(train_weekday_count)/(float(train_weekday_count+train_weekend_count))))
 
 
     #predict 输出
