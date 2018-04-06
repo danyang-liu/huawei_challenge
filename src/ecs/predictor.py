@@ -60,8 +60,8 @@ def predict_vm(ecs_lines, input_lines):
         predict_flavor_num.append(0)
         for item in esc_data:
             if item[1] == flavor_type[index] and item[2]+datetime.timedelta(train_days_delta)>=predict_date_start:
-                predict_flavor_num[index] = predict_flavor_num[index] + 1
-                # predict_flavor_num[index] = predict_flavor_num[index] + 1 + 2-2*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
+                # predict_flavor_num[index] = predict_flavor_num[index] + 1
+                predict_flavor_num[index] = predict_flavor_num[index] + 1 + 2-2*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
                 test_date = item[2]
                 test1 = float((predict_date_start - item[2]).days)
                 test = float((predict_date_start-item[2]).days)/float(train_days_delta)
