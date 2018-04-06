@@ -54,7 +54,8 @@ def predict_vm(ecs_lines, input_lines):
     #             predict_flavor_num[index] = predict_flavor_num[index] + 1
 
     #predict 权重法
-    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
+#    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
+    train_days_delta = 7
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
         for item in esc_data:
