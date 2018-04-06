@@ -54,12 +54,12 @@ def predict_vm(ecs_lines, input_lines):
     #             predict_flavor_num[index] = predict_flavor_num[index] + 1
 
     #predict 权重法
-    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
+#    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
+    train_days_delta = 7
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
         for item in esc_data:
-            if item[1] == flavor_type[index]:
-                #and item[2]+datetime.timedelta(train_days_delta)>=predict_date_start:
+            if item[1] == flavor_type[index] and item[2]+datetime.timedelta(train_days_delta)>=predict_date_start:
                 predict_flavor_num[index] = predict_flavor_num[index] + 1
                 # predict_flavor_num[index] = predict_flavor_num[index] + 1 + 2-2*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
                 test_date = item[2]
@@ -67,7 +67,7 @@ def predict_vm(ecs_lines, input_lines):
                 test = float((predict_date_start-item[2]).days)/float(train_days_delta)
                 pass
     for index in range(flavor_type_num):
-        predict_flavor_num[index] = int((predict_flavor_num[index]*float((predict_date_end-predict_date_start).days+1))/train_days_delta+1)
+        predict_flavor_num[index] = int((predict_flavor_num[index]*float((predict_date_end-predict_date_start).days+1))/train_days_delta)
 
 
     #predict 输出
