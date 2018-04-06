@@ -67,7 +67,7 @@ def predict_vm(ecs_lines, input_lines):
                 test = float((predict_date_start-item[2]).days)/float(train_days_delta)
                 pass
     for index in range(flavor_type_num):
-        predict_flavor_num[index] = int((predict_flavor_num[index]*float((predict_date_end-predict_date_start).days+1))/train_days_delta)
+        predict_flavor_num[index] = int((predict_flavor_num[index]*float(6+1))/train_days_delta)
 
 
     #predict 输出
