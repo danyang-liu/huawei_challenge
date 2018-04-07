@@ -4,92 +4,10 @@ import datetime
 import random
 import math
 import server
+import utils
 
 flavor_mem = [1,2,4,2,4,8,4,8,16,8,16,32,16,32,64]
 flavor_cpu = [1,1,1,2,2,2,4,4,4,8,8,8,16,16,16]
-
-#线性回归计算
-def cal_mean(readings):
-    """
-    Function to calculate the mean value of the input readings
-    :param readings:
-    :return:
-    """
-    readings_total = sum(readings)
-    number_of_readings = len(readings)
-    mean = readings_total / float(number_of_readings)
-    return mean
-
-def cal_variance(readings):
-    """
-    Calculating the variance of the readings
-    :param readings:
-    :return:
-    """
-
-    # To calculate the variance we need the mean value
-    # Calculating the mean value from the cal_mean function
-    readings_mean = cal_mean(readings)
-    # mean difference squared readings
-    mean_difference_squared_readings = [pow((reading - readings_mean), 2) for reading in readings]
-    variance = sum(mean_difference_squared_readings)
-    return variance / float(len(readings) - 1)
-
-def cal_covariance(readings_1, readings_2):
-    """
-    Calculate the covariance between two different list of readings
-    :param readings_1:
-    :param readings_2:
-    :return:
-    """
-    readings_1_mean = cal_mean(readings_1)
-    readings_2_mean = cal_mean(readings_2)
-    readings_size = len(readings_1)
-    covariance = 0.0
-    for i in xrange(0, readings_size):
-        covariance += (readings_1[i] - readings_1_mean) * (readings_2[i] - readings_2_mean)
-    return covariance / float(readings_size - 1)
-
-def cal_simple_linear_regression_coefficients(x_readings, y_readings):
-    """
-    Calculating the simple linear regression coefficients (B0, B1)
-    :param x_readings:
-    :param y_readings:
-    :return:
-    """
-    # Coefficient B1 = covariance of x_readings and y_readings divided by variance of x_readings
-    # Directly calling the implemented covariance and the variance functions
-    # To calculate the coefficient B1
-    b1 = cal_covariance(x_readings, y_readings) / float(cal_variance(x_readings))
-
-    # Coefficient B0 = mean of y_readings - ( B1 * the mean of the x_readings )
-    b0 = cal_mean(y_readings) - (b1 * cal_mean(x_readings))
-    return b0, b1
-
-def predict_target_value(x, b0, b1):
-    """
-    Calculating the target (y) value using the input x and the coefficients b0, b1
-    :param x:
-    :param b0:
-    :param b1:
-    :return:
-    """
-    return b0 + b1 * x
-
-def cal_rmse(actual_readings, predicted_readings):
-    """
-    Calculating the root mean square error
-    :param actual_readings:
-    :param predicted_readings:
-    :return:
-    """
-    square_error_total = 0.0
-    total_readings = len(actual_readings)
-    for i in xrange(0, total_readings):
-        error = predicted_readings[i] - actual_readings[i]
-        square_error_total += pow(error, 2)
-    rmse = square_error_total / float(total_readings)
-    return rmse
 
 
 def predict_vm(ecs_lines, input_lines):
@@ -197,8 +115,7 @@ def predict_vm(ecs_lines, input_lines):
 
     #predict 线性回归
     flavor_num = []
-    flavor_num_type = 15
-    for i in range(flavor_num_type):
+    for i in range(flavor_type_num):
         flavor_num.append([])
         for j in range((train_date_end - train_date_start).days + 1):
             flavor_num[i].append(0)
@@ -206,9 +123,9 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(len(esc_data)):
         ith_date = esc_data[i][2]
         ith_date_delta = (ith_date - train_date_start).days
-        ith_flavor = int(esc_data[i][1][6:]) - 1
-        if ith_flavor < flavor_num_type:
-            flavor_num[ith_flavor][ith_date_delta] = flavor_num[ith_flavor][ith_date_delta] + 1
+        for j in range(len(flavor_type)):
+            if esc_data[i][1] == flavor_type[j]:
+                flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
 
     date_index = []
     for i in range((train_date_end-train_date_start).days+1):
@@ -221,8 +138,8 @@ def predict_vm(ecs_lines, input_lines):
     num_predict = []
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
-    # Calculating the regression
-        w0,w1 = cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
+
+        w0,w1 = utils.cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
         num_predict.append([])
         for i in range(len(date_index_predict)):
             num_predict[index].append(w1*date_index_predict[i]+w0)
@@ -230,6 +147,9 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(len(predict_flavor_num)):
         if predict_flavor_num[i]<0:
             predict_flavor_num[i] = 0
+
+
+    #predict 一次指数平滑
 
 
     #predict 输出
