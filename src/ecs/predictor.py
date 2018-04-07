@@ -163,7 +163,7 @@ def predict_vm(ecs_lines, input_lines):
             if esc_data[i][1] == flavor_type[j]:
                 flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
 
-    a = 0.5
+    a = 0.64
     predict_flavor_num = []
     for i in range(flavor_type_num):
         for j in range(predict_data_delta+1):
