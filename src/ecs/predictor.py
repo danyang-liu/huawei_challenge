@@ -113,7 +113,43 @@ def predict_vm(ecs_lines, input_lines):
 #         predict_flavor_num[index] = int(predict_flavor_num[index]*predict_weekday_weekend_index/train_weekday_weekend_index)
 
 
-    #predict 线性回归
+    # #predict 线性回归
+    # flavor_num = []
+    # for i in range(flavor_type_num):
+    #     flavor_num.append([])
+    #     for j in range((train_date_end - train_date_start).days + 1):
+    #         flavor_num[i].append(0)
+    #
+    # for i in range(len(esc_data)):
+    #     ith_date = esc_data[i][2]
+    #     ith_date_delta = (ith_date - train_date_start).days
+    #     for j in range(len(flavor_type)):
+    #         if esc_data[i][1] == flavor_type[j]:
+    #             flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
+    #
+    # date_index = []
+    # for i in range((train_date_end-train_date_start).days+1):
+    #     date_index.append(i)
+    #
+    # date_index_predict = []
+    # for i in range((predict_date_end-predict_date_start).days+1):
+    #     date_index_predict.append(len(date_index)+i)
+    #
+    # num_predict = []
+    # for index in range(flavor_type_num):
+    #     predict_flavor_num.append(0)
+    #
+    #     w0,w1 = utils.cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
+    #     num_predict.append([])
+    #     for i in range(len(date_index_predict)):
+    #         num_predict[index].append(w1*date_index_predict[i]+w0)
+    #     predict_flavor_num[index] = int(sum(num_predict[index]))
+    # for i in range(len(predict_flavor_num)):
+    #     if predict_flavor_num[i]<0:
+    #         predict_flavor_num[i] = 0
+
+
+    #predict 一次指数平滑
     flavor_num = []
     for i in range(flavor_type_num):
         flavor_num.append([])
@@ -127,29 +163,16 @@ def predict_vm(ecs_lines, input_lines):
             if esc_data[i][1] == flavor_type[j]:
                 flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
 
-    date_index = []
-    for i in range((train_date_end-train_date_start).days+1):
-        date_index.append(i)
+    a = 0.5
+    predict_flavor_num = []
+    for i in range(flavor_type_num):
+        for j in range(predict_data_delta+1):
+            s1 = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
+            s2 = a * flavor_num[i][-1] + (1-a)*s1
+            flavor_num[i].append(s2)
+        predict_flavor_num.append(int(sum(flavor_num[i][-(predict_data_delta+1):])))
+        pass
 
-    date_index_predict = []
-    for i in range((predict_date_end-predict_date_start).days+1):
-        date_index_predict.append(len(date_index)+i)
-
-    num_predict = []
-    for index in range(flavor_type_num):
-        predict_flavor_num.append(0)
-
-        w0,w1 = utils.cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
-        num_predict.append([])
-        for i in range(len(date_index_predict)):
-            num_predict[index].append(w1*date_index_predict[i]+w0)
-        predict_flavor_num[index] = int(sum(num_predict[index]))
-    for i in range(len(predict_flavor_num)):
-        if predict_flavor_num[i]<0:
-            predict_flavor_num[i] = 0
-
-
-    #predict 一次指数平滑
 
 
     #predict 输出
