@@ -175,7 +175,7 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         pinghua_flavor_num_predict_init.append(float(sum(flavor_num[i][0:3]))/float(3))
 
-    a = 0.5
+    a = 0.6
 
     #求指数平滑预测序列
     for i in range(flavor_type_num):
