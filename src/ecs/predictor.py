@@ -135,8 +135,10 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
         for j in range(len(flavor_num[i])):
-            if flavor_num[i][j] > 15*avarage_num:
+            if flavor_num[i][j] > 10*avarage_num:
                 flavor_num[i][j] = 3*avarage_num
+            if avarage_num > 10*flavor_num[i][j]:
+                flavor_num[i][j] = 3*flavor_num[i][j]
 
 
     date_index = []
