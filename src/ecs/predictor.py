@@ -9,18 +9,20 @@ import utils
 flavor_mem = [1,2,4,2,4,8,4,8,16,8,16,32,16,32,64]
 flavor_cpu = [1,1,1,2,2,2,4,4,4,8,8,8,16,16,16]
 
-holiday = [datetime(2015,1,1),datetime(2015,1,2),datetime(2015,1,3),datetime(2015,2,18),datetime(2015,2,19),datetime(2015,2,20),
-            datetime(2015,2,21),datetime(2015,2,22),datetime(2015,2,23),datetime(2015,2,24),datetime(2015,4,5),datetime(2015,5,1),
-            datetime(2015,6,20),datetime(2015,9,27),datetime(2015,10,1),datetime(2015,10,1),datetime(2015,10,1),datetime(2015,10,1),
-           datetime(2015,10,2),datetime(2015,10,3),datetime(2015,10,4),datetime(2015,10,5),datetime(2015,10,6),datetime(2015,10,7),
-           datetime(2016,1,1), datetime(2015, 2, 18),
-           datetime(2015, 2, 19), datetime(2015, 2, 20),
-           datetime(2015, 2, 21), datetime(2015, 2, 22), datetime(2015, 2, 23), datetime(2015, 2, 24),
-           datetime(2015, 4, 5), datetime(2015, 5, 1),
-           datetime(2015, 6, 20), datetime(2015, 9, 27), datetime(2015, 10, 1), datetime(2015, 10, 1),
-           datetime(2015, 10, 1), datetime(2015, 10, 1),
-           datetime(2015, 10, 2), datetime(2015, 10, 3), datetime(2015, 10, 4), datetime(2015, 10, 5),
-           datetime(2015, 10, 6), datetime(2015, 10, 7)
+holiday = [datetime.datetime(2015,1,1),datetime.datetime(2015,1,2),datetime.datetime(2015,1,3),datetime.datetime(2015,2,18),
+           datetime.datetime(2015,2,19),datetime.datetime(2015,2,20),datetime.datetime(2015,2,21),datetime.datetime(2015,2,22),
+           datetime.datetime(2015,2,23),datetime.datetime(2015,2,24),datetime.datetime(2015,4,5),datetime.datetime(2015,5,1),
+           datetime.datetime(2015,6,20),datetime.datetime(2015,9,27),datetime.datetime(2015,10,1),datetime.datetime(2015,10,2),
+           datetime.datetime(2015,10,3),datetime.datetime(2015,10,4),datetime.datetime(2015,10,5),datetime.datetime(2015,10,6),
+           datetime.datetime(2015,10,7),
+
+           datetime.datetime(2016,1,1),datetime.datetime(2016,2,7),datetime.datetime(2016,2,8),datetime.datetime(2016,2,9),
+           datetime.datetime(2016,2,10),datetime.datetime(2016,2,11),datetime.datetime(2016,2,12),datetime.datetime(2016,2,13),
+           datetime.datetime(2016,4,4), datetime.datetime(2016,5,1),datetime.datetime(2016,6,9), datetime.datetime(2016,6,10),
+           datetime.datetime(2016,6,11),datetime.datetime(2016,10,1), datetime.datetime(2016,10,2),datetime.datetime(2016,10,3),
+           datetime.datetime(2016,10,4),datetime.datetime(2016,10,5),datetime.datetime(2016,10,6),datetime.datetime(2016,10,7),
+
+
            ]
 
 
@@ -149,13 +151,13 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
         for j in range(len(flavor_num[i])):
-            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+            if flavor_num[i][j] > 10*avarage_num and ((predict_date_start+datetime.timedelta(j)).isoweekday()<6 and (predict_date_start+datetime.timedelta(j) not in holiday)):
                 flavor_num[i][j] = 5*avarage_num
-            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
+            if flavor_num[i][j] > 10*avarage_num and ((predict_date_start+datetime.timedelta(j)).isoweekday()>=6 or (predict_date_start+datetime.timedelta(j) in holiday)):
                 flavor_num[i][j] = avarage_num
-            if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+            if avarage_num > 10*flavor_num[i][j] and ((predict_date_start+datetime.timedelta(j)).isoweekday()<6 and (predict_date_start+datetime.timedelta(j) not in holiday)):
                 flavor_num[i][j] = avarage_num
-            if avarage_num > 10 * flavor_num[i][j] and (predict_date_start + datetime.timedelta(j)).isoweekday()>=6:
+            if avarage_num > 10 * flavor_num[i][j] and ((predict_date_start+datetime.timedelta(j)).isoweekday()>=6 or (predict_date_start+datetime.timedelta(j) in holiday)):
                 flavor_num[i][j] = 3*flavor_num[i][j]
 
 
@@ -282,7 +284,7 @@ def predict_vm(ecs_lines, input_lines):
 
     T = 100
     Tmin = 1
-    r = 0.99
+    r = 0.995
     minserver = total_flavors_num
     best_server_list = []
     flavor_dice = range(total_flavors_num)
