@@ -22,7 +22,12 @@ holiday = [datetime.datetime(2015,1,1),datetime.datetime(2015,1,2),datetime.date
            datetime.datetime(2016,6,11),datetime.datetime(2016,10,1), datetime.datetime(2016,10,2),datetime.datetime(2016,10,3),
            datetime.datetime(2016,10,4),datetime.datetime(2016,10,5),datetime.datetime(2016,10,6),datetime.datetime(2016,10,7),
 
-
+           datetime.datetime(2017,1,1),datetime.datetime(2017,1,27),datetime.datetime(2017,1,28),datetime.datetime(2017,1,29),
+           datetime.datetime(2017,1,30),datetime.datetime(2017,1,31),datetime.datetime(2017,2,1),datetime.datetime(2017,2,2),
+           datetime.datetime(2017,4,2), datetime.datetime(2017,4,3),datetime.datetime(2017,4,4), datetime.datetime(2017,5,28),
+           datetime.datetime(2017,5,29), datetime.datetime(2017,5,30),datetime.datetime(2017,10,1),
+           datetime.datetime(2017,10,2),datetime.datetime(2017,10,3),datetime.datetime(2017,10,4),datetime.datetime(2017,10,5),
+           datetime.datetime(2017,10,6),datetime.datetime(2017,10,7),datetime.datetime(2017,10,8)
            ]
 
 
