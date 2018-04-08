@@ -141,6 +141,8 @@ def predict_vm(ecs_lines, input_lines):
                 flavor_num[i][j] = avarage_num
             if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
                 flavor_num[i][j] = avarage_num
+            if avarage_num > 10 * flavor_num[i][j] and (predict_date_start + datetime.timedelta(j)).isoweekday()>=6:
+                flavor_num[i][j] = 2*flavor_num[i][j]
 
 
     date_index = []
