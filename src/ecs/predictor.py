@@ -159,13 +159,13 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
         for j in range(len(flavor_num[i])):
-            if flavor_num[i][j] > 10*avarage_num and ((predict_date_start+datetime.timedelta(j)).isoweekday()<6 and (predict_date_start+datetime.timedelta(j) not in holiday)):
+            if flavor_num[i][j] > 8*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
                 flavor_num[i][j] = 5*avarage_num
-            if flavor_num[i][j] > 10*avarage_num and ((predict_date_start+datetime.timedelta(j)).isoweekday()>=6 or (predict_date_start+datetime.timedelta(j) in holiday)):
+            if flavor_num[i][j] > 8*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
                 flavor_num[i][j] = avarage_num
-            if avarage_num > 10*flavor_num[i][j] and ((predict_date_start+datetime.timedelta(j)).isoweekday()<6 and (predict_date_start+datetime.timedelta(j) not in holiday)):
+            if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
                 flavor_num[i][j] = avarage_num
-            if avarage_num > 10 * flavor_num[i][j] and ((predict_date_start+datetime.timedelta(j)).isoweekday()>=6 or (predict_date_start+datetime.timedelta(j) in holiday)):
+            if avarage_num > 10 * flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
                 flavor_num[i][j] = 3*flavor_num[i][j]
 
 
@@ -292,7 +292,7 @@ def predict_vm(ecs_lines, input_lines):
 
     T = 100
     Tmin = 1
-    r = 0.99
+    r = 0.995
     minserver = total_flavors_num
     best_server_list = []
     flavor_dice = range(total_flavors_num)
