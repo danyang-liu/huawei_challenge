@@ -135,10 +135,12 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
         for j in range(len(flavor_num[i])):
-            if flavor_num[i][j] > 10*avarage_num:
-                flavor_num[i][j] = 3*avarage_num
-            if avarage_num > 10*flavor_num[i][j]:
-                flavor_num[i][j] = 3*flavor_num[i][j]
+            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+                flavor_num[i][j] = 5*avarage_num
+            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
+                flavor_num[i][j] = avarage_num
+            if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+                flavor_num[i][j] = avarage_num
 
 
     date_index = []
