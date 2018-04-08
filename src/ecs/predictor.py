@@ -9,6 +9,20 @@ import utils
 flavor_mem = [1,2,4,2,4,8,4,8,16,8,16,32,16,32,64]
 flavor_cpu = [1,1,1,2,2,2,4,4,4,8,8,8,16,16,16]
 
+holiday = [datetime(2015,1,1),datetime(2015,1,2),datetime(2015,1,3),datetime(2015,2,18),datetime(2015,2,19),datetime(2015,2,20),
+            datetime(2015,2,21),datetime(2015,2,22),datetime(2015,2,23),datetime(2015,2,24),datetime(2015,4,5),datetime(2015,5,1),
+            datetime(2015,6,20),datetime(2015,9,27),datetime(2015,10,1),datetime(2015,10,1),datetime(2015,10,1),datetime(2015,10,1),
+           datetime(2015,10,2),datetime(2015,10,3),datetime(2015,10,4),datetime(2015,10,5),datetime(2015,10,6),datetime(2015,10,7),
+           datetime(2016,1,1), datetime(2015, 2, 18),
+           datetime(2015, 2, 19), datetime(2015, 2, 20),
+           datetime(2015, 2, 21), datetime(2015, 2, 22), datetime(2015, 2, 23), datetime(2015, 2, 24),
+           datetime(2015, 4, 5), datetime(2015, 5, 1),
+           datetime(2015, 6, 20), datetime(2015, 9, 27), datetime(2015, 10, 1), datetime(2015, 10, 1),
+           datetime(2015, 10, 1), datetime(2015, 10, 1),
+           datetime(2015, 10, 2), datetime(2015, 10, 3), datetime(2015, 10, 4), datetime(2015, 10, 5),
+           datetime(2015, 10, 6), datetime(2015, 10, 7)
+           ]
+
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
