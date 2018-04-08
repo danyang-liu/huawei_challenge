@@ -32,12 +32,14 @@ def predict_vm(ecs_lines, input_lines):
     server_infor.append(int(input_lines[0].split()[1]))
     server_infor.append(int(input_lines[0].split()[2]))
 
+    #要预测的vm数
     flavor_type_num = int(input_lines[2])
+    #要预测的vm种类 e.g. ['flavor1','flavor3'...]
     flavor_type = []
 
     for i in range(flavor_type_num):
         flavor_type.append(input_lines[3+i].split()[0])
-
+    # CPU or MEM
     resource_type = input_lines[flavor_type_num+4].split()[0]
 
     date_start_split = input_lines[flavor_type_num+6].split()[0]
@@ -47,14 +49,16 @@ def predict_vm(ecs_lines, input_lines):
     train_date_start = esc_data[0][2]
     train_date_end = esc_data[-1][2]
     predict_data_delta = (predict_date_end - predict_date_start).days
+
+    #存放每种vm的预测结果
     predict_flavor_num = []
 
-    # #predict 取前一星期数据
-    # for index in range(flavor_type_num):
-    #     predict_flavor_num.append(0)
-    #     for item in esc_data:
-    #         if item[1] == flavor_type[index] and item[2]+datetime.timedelta(predict_data_delta+1)>=predict_date_start and item[2]+datetime.timedelta(predict_data_delta+1)<=predict_date_end:
-    #             predict_flavor_num[index] = predict_flavor_num[index] + 1
+    #predict 取前一星期数据
+    for index in range(flavor_type_num):
+        predict_flavor_num.append(0)
+        for item in esc_data:
+            if item[1] == flavor_type[index] and item[2]+datetime.timedelta(predict_data_delta+1)>=predict_date_start and item[2]+datetime.timedelta(predict_data_delta+1)<=predict_date_end:
+                predict_flavor_num[index] = predict_flavor_num[index] + 1
 
 #     #predict 权重法
 # #    train_days_delta = (esc_data[-1][2]-esc_data[0][2]).days+1
@@ -151,10 +155,13 @@ def predict_vm(ecs_lines, input_lines):
 
     #predict 一次指数平滑
     flavor_num = []
+    s_pinghua_flavor_num_predict = []
     for i in range(flavor_type_num):
         flavor_num.append([])
+        s_pinghua_flavor_num_predict.append([])
         for j in range((train_date_end - train_date_start).days + 1):
             flavor_num[i].append(0)
+
 
     for i in range(len(esc_data)):
         ith_date = esc_data[i][2]
@@ -163,13 +170,28 @@ def predict_vm(ecs_lines, input_lines):
             if esc_data[i][1] == flavor_type[j]:
                 flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
 
-    a = 0.64
+    #求指数平滑初始值
+    pinghua_flavor_num_predict_init = []
+    for i in range(flavor_type_num):
+        pinghua_flavor_num_predict_init.append(float(sum(flavor_num[i][0:3]))/float(3))
+
+    a = 0.5
+
+    #求指数平滑预测序列
+    for i in range(flavor_type_num):
+        s1 = pinghua_flavor_num_predict_init[i]
+        for j in range((train_date_end-train_date_start).days+1+predict_data_delta+1):
+            if j <(train_date_end-train_date_start).days+1:
+                s_pinghua_flavor_num_predict[i].append(a*float(flavor_num[i][j])+(1-a)*s1)
+                s1 = s_pinghua_flavor_num_predict[i][-1]
+            else:
+                flavor_num[i].append(a*float(flavor_num[i][j-1])+(1-a)*s1)
+                s_pinghua_flavor_num_predict.append(a * float(flavor_num[i][j]) + (1 - a) * s1)
+                s1 = s_pinghua_flavor_num_predict[i][-1]
+            pass
+
     predict_flavor_num = []
     for i in range(flavor_type_num):
-        for j in range(predict_data_delta+1):
-            s1 = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
-            s2 = a * flavor_num[i][-1] + (1-a)*s1
-            flavor_num[i].append(s2)
         predict_flavor_num.append(int(sum(flavor_num[i][-(predict_data_delta+1):])))
         pass
 
