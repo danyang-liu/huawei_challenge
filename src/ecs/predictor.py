@@ -266,12 +266,30 @@ def predict_vm(ecs_lines, input_lines):
             if esc_data[i][1] == flavor_type[j]:
                 flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
 
+
+    # 简单去噪
+    for i in range(flavor_type_num):
+        avarage_num = float(sum(flavor_num[i])) / float(len(flavor_num[i]))
+        for j in range(len(flavor_num[i])):
+            if flavor_num[i][j] > 10 * avarage_num and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
+                flavor_num[i][j] = 5 * avarage_num
+            if flavor_num[i][j] > 10 * avarage_num and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
+                flavor_num[i][j] = avarage_num
+            if avarage_num > 10 * flavor_num[i][j] and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
+                flavor_num[i][j] = avarage_num
+            if avarage_num > 10 * flavor_num[i][j] and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
+                flavor_num[i][j] = 3 * flavor_num[i][j]
+
     #求指数平滑初始值
     pinghua_flavor_num_predict_init = []
     for i in range(flavor_type_num):
         pinghua_flavor_num_predict_init.append(float(sum(flavor_num[i][0:3]))/float(3))
 
-    a = 0.04
+    a = 0.05
 
     for i in range(flavor_type_num):
         s1 = []
@@ -302,7 +320,9 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         predict_flavor_num.append(int(sum(flavor_num[i][-(predict_data_delta+1):])))
         pass
-
+    for i in range(flavor_type_num):
+        if predict_flavor_num[i]<0:
+            predict_flavor_num[i] = 0
     #predict 输出
     total_flavors_num = 0
     for item in predict_flavor_num:
