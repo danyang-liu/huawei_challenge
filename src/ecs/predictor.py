@@ -200,7 +200,14 @@ def predict_vm(ecs_lines, input_lines):
         for j in range((train_date_end - train_date_start).days + 1):
             flavor_num[i].append(0)
 
-            # 简单去噪
+    for i in range(len(esc_data)):
+        ith_date = esc_data[i][2]
+        ith_date_delta = (ith_date - train_date_start).days
+        for j in range(len(flavor_type)):
+            if esc_data[i][1] == flavor_type[j]:
+                flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
+
+                # 简单去噪
     for i in range(flavor_type_num):
         avarage_num = float(sum(flavor_num[i])) / float(len(flavor_num[i]))
         for j in range(len(flavor_num[i])):
@@ -216,13 +223,6 @@ def predict_vm(ecs_lines, input_lines):
             if avarage_num > 10 * flavor_num[i][j] and (
                 predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
                 flavor_num[i][j] = 3 * flavor_num[i][j]
-
-    for i in range(len(esc_data)):
-        ith_date = esc_data[i][2]
-        ith_date_delta = (ith_date - train_date_start).days
-        for j in range(len(flavor_type)):
-            if esc_data[i][1] == flavor_type[j]:
-                flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
 
     #求指数平滑初始值
     pinghua_flavor_num_predict_init = []
@@ -248,6 +248,9 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         predict_flavor_num.append(int(sum(flavor_num[i][-(predict_data_delta+1):])))
         pass
+
+
+    #predict 三次指数平滑
 
 
 
