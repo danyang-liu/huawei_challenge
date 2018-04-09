@@ -289,7 +289,7 @@ def predict_vm(ecs_lines, input_lines):
     for i in range(flavor_type_num):
         pinghua_flavor_num_predict_init.append(float(sum(flavor_num[i][0:3]))/float(3))
 
-    a = 0.06
+    a = 0.05
 
     for i in range(flavor_type_num):
         s1 = []
@@ -318,7 +318,7 @@ def predict_vm(ecs_lines, input_lines):
 
     predict_flavor_num = []
     for i in range(flavor_type_num):
-        predict_flavor_num.append(int(sum(flavor_num[i][-(predict_data_delta+1):])))
+        predict_flavor_num.append(int(1.1*sum(flavor_num[i][-(predict_data_delta+1):])))
         pass
     for i in range(flavor_type_num):
         if predict_flavor_num[i]<0:
