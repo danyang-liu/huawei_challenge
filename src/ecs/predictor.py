@@ -392,6 +392,24 @@ def predict_vm(ecs_lines, input_lines):
             if esc_data[i][1] == flavor_type[j]:
                 flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
 
+    # 简单去噪
+    for i in range(flavor_type_num):
+        avarage_num = float(sum(flavor_num[i])) / float(len(flavor_num[i]))
+        for j in range(len(flavor_num[i])):
+            if flavor_num[i][j] > 10 * avarage_num and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
+                flavor_num[i][j] = 5 * avarage_num
+            if flavor_num[i][j] > 10 * avarage_num and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
+                flavor_num[i][j] = avarage_num
+            if avarage_num > 10 * flavor_num[i][j] and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
+                flavor_num[i][j] = avarage_num
+            if avarage_num > 10 * flavor_num[i][j] and (
+                predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
+                flavor_num[i][j] = 3 * flavor_num[i][j]
+
+
     for index in range(flavor_type_num):
         epsilon = 0.001  # 收敛阈值
         alpha = 0.00001  # 学习率
