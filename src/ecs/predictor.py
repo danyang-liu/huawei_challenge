@@ -394,7 +394,7 @@ def predict_vm(ecs_lines, input_lines):
 
     for index in range(flavor_type_num):
         epsilon = 0.001  # 收敛阈值
-        alpha = 0.0001  # 学习率
+        alpha = 0.00001  # 学习率
         tao = 6  # 波长
         testNum = predict_data_delta + 1  # 测试样本个数
         n = 1  # 特征数
@@ -414,7 +414,7 @@ def predict_vm(ecs_lines, input_lines):
                 sum_w_x_y = 0
                 for j in range(m):
                     sum_w_x2 = sum_w_x2 + w[j]*j*j
-                    sum_w_x_y = sum_w_x_y + w[j]*j*flavor_num[index][i]
+                    sum_w_x_y = sum_w_x_y + w[j]*j*flavor_num[index][j]
                     pass
                 theta_new = (1-alpha*sum_w_x2)*theta + alpha*sum_w_x_y
 
