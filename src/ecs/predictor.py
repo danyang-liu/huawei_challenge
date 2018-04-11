@@ -411,7 +411,7 @@ def predict_vm(ecs_lines, input_lines):
 
 
     for index in range(flavor_type_num):
-        epsilon = 0.0001  # 收敛阈值
+        epsilon = 0.0005  # 收敛阈值
         alpha = 0.00001  # 学习率
         tao = 6  # 波长
         testNum = predict_data_delta + 1  # 测试样本个数
