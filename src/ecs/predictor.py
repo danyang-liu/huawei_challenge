@@ -453,7 +453,7 @@ def predict_vm(ecs_lines, input_lines):
             predict_flavor_num_jubu[i] = 0
 
     for i in range(flavor_type_num):
-        predict_flavor_num.append(int(0.9*predict_flavor_num_3_zhishu[i]+0.1*predict_flavor_num_jubu[i]))
+        predict_flavor_num.append(int(0.5*predict_flavor_num_3_zhishu[i]+0.5*predict_flavor_num_jubu[i]))
 
     #predict 输出
     total_flavors_num = 0
