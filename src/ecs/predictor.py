@@ -139,56 +139,56 @@ def predict_vm(ecs_lines, input_lines):
 #         predict_flavor_num[index] = (predict_flavor_num[index] * float(predict_data_delta + 1)) / train_days_delta
 # #        predict_flavor_num[index] = int(predict_flavor_num[index] * (float(predict_weekday_count)/(float(predict_weekday_count+predict_weekend_count))) / (float(train_weekday_count)/(float(train_weekday_count+train_weekend_count))))
 #         predict_flavor_num[index] = int(predict_flavor_num[index]*predict_weekday_weekend_index/train_weekday_weekend_index)
+#
+
+    #predict 线性回归
+    flavor_num = []
+    for i in range(flavor_type_num):
+        flavor_num.append([])
+        for j in range((train_date_end - train_date_start).days + 1):
+            flavor_num[i].append(0)
+
+    for i in range(len(esc_data)):
+        ith_date = esc_data[i][2]
+        ith_date_delta = (ith_date - train_date_start).days
+        for j in range(len(flavor_type)):
+            if esc_data[i][1] == flavor_type[j]:
+                flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
+
+    #简单去噪
+    for i in range(flavor_type_num):
+        avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
+        for j in range(len(flavor_num[i])):
+            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+                flavor_num[i][j] = 5*avarage_num
+            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
+                flavor_num[i][j] = avarage_num
+            if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+                flavor_num[i][j] = avarage_num
+            if avarage_num > 10 * flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
+                flavor_num[i][j] = 3*flavor_num[i][j]
 
 
-    # #predict 线性回归
-    # flavor_num = []
-    # for i in range(flavor_type_num):
-    #     flavor_num.append([])
-    #     for j in range((train_date_end - train_date_start).days + 1):
-    #         flavor_num[i].append(0)
-    #
-    # for i in range(len(esc_data)):
-    #     ith_date = esc_data[i][2]
-    #     ith_date_delta = (ith_date - train_date_start).days
-    #     for j in range(len(flavor_type)):
-    #         if esc_data[i][1] == flavor_type[j]:
-    #             flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
-    #
-    # #简单去噪
-    # for i in range(flavor_type_num):
-    #     avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
-    #     for j in range(len(flavor_num[i])):
-    #         if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
-    #             flavor_num[i][j] = 5*avarage_num
-    #         if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
-    #             flavor_num[i][j] = avarage_num
-    #         if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
-    #             flavor_num[i][j] = avarage_num
-    #         if avarage_num > 10 * flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
-    #             flavor_num[i][j] = 3*flavor_num[i][j]
-    #
-    #
-    # date_index = []
-    # for i in range((train_date_end-train_date_start).days+1):
-    #     date_index.append(i)
-    #
-    # date_index_predict = []
-    # for i in range((predict_date_end-predict_date_start).days+1):
-    #     date_index_predict.append(len(date_index)+i)
-    #
-    # num_predict = []
-    # for index in range(flavor_type_num):
-    #     predict_flavor_num.append(0)
-    #
-    #     w0,w1 = utils.cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
-    #     num_predict.append([])
-    #     for i in range(len(date_index_predict)):
-    #         num_predict[index].append(w1*date_index_predict[i]+w0)
-    #     predict_flavor_num[index] = int(sum(num_predict[index]))
-    # for i in range(len(predict_flavor_num)):
-    #     if predict_flavor_num[i]<0:
-    #         predict_flavor_num[i] = 0
+    date_index = []
+    for i in range((train_date_end-train_date_start).days+1):
+        date_index.append(i)
+
+    date_index_predict = []
+    for i in range((predict_date_end-predict_date_start).days+1):
+        date_index_predict.append(len(date_index)+i)
+
+    num_predict = []
+    for index in range(flavor_type_num):
+        predict_flavor_num.append(0)
+
+        w0,w1 = utils.cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
+        num_predict.append([])
+        for i in range(len(date_index_predict)):
+            num_predict[index].append(w1*date_index_predict[i]+w0)
+        predict_flavor_num[index] = int(sum(num_predict[index]))
+    for i in range(len(predict_flavor_num)):
+        if predict_flavor_num[i]<0:
+            predict_flavor_num[i] = 0
 
 
     # #predict 一次指数平滑
@@ -376,84 +376,84 @@ def predict_vm(ecs_lines, input_lines):
     #         predict_flavor_num_3_zhishu[i] = 0
 
 
-    #predict 局部加权线性回归
-    flavor_num = []
-    s_pinghua_flavor_num_predict = []
-    for i in range(flavor_type_num):
-        flavor_num.append([])
-        s_pinghua_flavor_num_predict.append([])
-        for j in range((train_date_end - train_date_start).days + 1):
-            flavor_num[i].append(0)
-
-    for i in range(len(esc_data)):
-        ith_date = esc_data[i][2]
-        ith_date_delta = (ith_date - train_date_start).days
-        for j in range(len(flavor_type)):
-            if esc_data[i][1] == flavor_type[j]:
-                flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
-
-    # 简单去噪
-    for i in range(flavor_type_num):
-        avarage_num = float(sum(flavor_num[i])) / float(len(flavor_num[i]))
-        for j in range(len(flavor_num[i])):
-            if flavor_num[i][j] > 10 * avarage_num and (
-                predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
-                flavor_num[i][j] = 5 * avarage_num
-            if flavor_num[i][j] > 10 * avarage_num and (
-                predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
-                flavor_num[i][j] = avarage_num
-            if avarage_num > 10 * flavor_num[i][j] and (
-                predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
-                flavor_num[i][j] = avarage_num
-            if avarage_num > 10 * flavor_num[i][j] and (
-                predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
-                flavor_num[i][j] = 3 * flavor_num[i][j]
-
-
-    for index in range(flavor_type_num):
-        epsilon = 0.001  # 收敛阈值
-        alpha = 0.00002  # 学习率
-        tao = 6  # 波长
-        testNum = predict_data_delta + 1  # 测试样本个数
-        n = 1  # 特征数
-        m = (train_date_end - train_date_start).days + 1  # 训练样本个数
-        w = []
-        for i in range((train_date_end - train_date_start).days + 1):
-            w.append(0)
-
-        for i in range(testNum):
-            for j in range(m):
-                w[j] = math.exp(-float(m + i - j) * float(m + i - j) / float(2 * tao * tao))
-            theta = 0
-            theta_new = 0
-
-            while 1:
-                sum_w_x2 = 0
-                sum_w_x_y = 0
-                for j in range(m):
-                    sum_w_x2 = sum_w_x2 + w[j]*j*j
-                    sum_w_x_y = sum_w_x_y + w[j]*j*flavor_num[index][j]
-                    pass
-                theta_new = (1-alpha*sum_w_x2)*theta + alpha*sum_w_x_y
-
-                if (theta_new - theta) < epsilon:
-                    theta = theta_new;
-                    break
-                else:
-                    theta = theta_new;
-            flavor_num[index].append((m+i)*theta)
-    pass
-    predict_flavor_num_jubu = []
-    for i in range(flavor_type_num):
-        #predict_flavor_num.append(int(1.02*sum(flavor_num[i][-(predict_data_delta+1):])))
-        predict_flavor_num_jubu.append(sum(flavor_num[i][-(predict_data_delta + 1):]))
-        pass
-    for i in range(flavor_type_num):
-        if predict_flavor_num_jubu[i]<0:
-            predict_flavor_num_jubu[i] = 0
-
-    for i in range(flavor_type_num):
-        predict_flavor_num.append(int(predict_flavor_num_jubu[i]))
+    # #predict 局部加权线性回归
+    # flavor_num = []
+    # s_pinghua_flavor_num_predict = []
+    # for i in range(flavor_type_num):
+    #     flavor_num.append([])
+    #     s_pinghua_flavor_num_predict.append([])
+    #     for j in range((train_date_end - train_date_start).days + 1):
+    #         flavor_num[i].append(0)
+    #
+    # for i in range(len(esc_data)):
+    #     ith_date = esc_data[i][2]
+    #     ith_date_delta = (ith_date - train_date_start).days
+    #     for j in range(len(flavor_type)):
+    #         if esc_data[i][1] == flavor_type[j]:
+    #             flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
+    #
+    # # 简单去噪
+    # for i in range(flavor_type_num):
+    #     avarage_num = float(sum(flavor_num[i])) / float(len(flavor_num[i]))
+    #     for j in range(len(flavor_num[i])):
+    #         if flavor_num[i][j] > 10 * avarage_num and (
+    #             predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
+    #             flavor_num[i][j] = 5 * avarage_num
+    #         if flavor_num[i][j] > 10 * avarage_num and (
+    #             predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
+    #             flavor_num[i][j] = avarage_num
+    #         if avarage_num > 10 * flavor_num[i][j] and (
+    #             predict_date_start + datetime.timedelta(j)).isoweekday() < 6:
+    #             flavor_num[i][j] = avarage_num
+    #         if avarage_num > 10 * flavor_num[i][j] and (
+    #             predict_date_start + datetime.timedelta(j)).isoweekday() >= 6:
+    #             flavor_num[i][j] = 3 * flavor_num[i][j]
+    #
+    #
+    # for index in range(flavor_type_num):
+    #     epsilon = 0.001  # 收敛阈值
+    #     alpha = 0.00002  # 学习率
+    #     tao = 6  # 波长
+    #     testNum = predict_data_delta + 1  # 测试样本个数
+    #     n = 1  # 特征数
+    #     m = (train_date_end - train_date_start).days + 1  # 训练样本个数
+    #     w = []
+    #     for i in range((train_date_end - train_date_start).days + 1):
+    #         w.append(0)
+    #
+    #     for i in range(testNum):
+    #         for j in range(m):
+    #             w[j] = math.exp(-float(m + i - j) * float(m + i - j) / float(2 * tao * tao))
+    #         theta = 0
+    #         theta_new = 0
+    #
+    #         while 1:
+    #             sum_w_x2 = 0
+    #             sum_w_x_y = 0
+    #             for j in range(m):
+    #                 sum_w_x2 = sum_w_x2 + w[j]*j*j
+    #                 sum_w_x_y = sum_w_x_y + w[j]*j*flavor_num[index][j]
+    #                 pass
+    #             theta_new = (1-alpha*sum_w_x2)*theta + alpha*sum_w_x_y
+    #
+    #             if (theta_new - theta) < epsilon:
+    #                 theta = theta_new;
+    #                 break
+    #             else:
+    #                 theta = theta_new;
+    #         flavor_num[index].append((m+i)*theta)
+    # pass
+    # predict_flavor_num_jubu = []
+    # for i in range(flavor_type_num):
+    #     #predict_flavor_num.append(int(1.02*sum(flavor_num[i][-(predict_data_delta+1):])))
+    #     predict_flavor_num_jubu.append(sum(flavor_num[i][-(predict_data_delta + 1):]))
+    #     pass
+    # for i in range(flavor_type_num):
+    #     if predict_flavor_num_jubu[i]<0:
+    #         predict_flavor_num_jubu[i] = 0
+    #
+    # for i in range(flavor_type_num):
+    #     predict_flavor_num.append(int(predict_flavor_num_jubu[i]))
 
 
 
