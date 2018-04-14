@@ -369,7 +369,7 @@ def predict_vm(ecs_lines, input_lines):
     predict_flavor_num_3_zhishu = []
     for i in range(flavor_type_num):
         #predict_flavor_num.append(int(1.02*sum(flavor_num[i][-(predict_data_delta+1):])))
-        predict_flavor_num_3_zhishu.append(1.02*sum(flavor_num[i][-(predict_data_delta + 1):]))
+        predict_flavor_num_3_zhishu.append(sum(flavor_num[i][-(predict_data_delta + 1):]))
         pass
     for i in range(flavor_type_num):
         if predict_flavor_num_3_zhishu[i]<0:
