@@ -101,94 +101,94 @@ def predict_vm(ecs_lines, input_lines):
 #         predict_flavor_num[index] = int((predict_flavor_num[index]*float(predict_data_delta+1))/train_days_delta)
 
 
-#     #predict 统计周末周中权重
-#
-#     train_days_delta = 6
-#     #统计predict中周中周末数
-#     predict_weekday_count = 0
-#     predict_weekend_count = 0
-#     train_weekday_count = 0
-#     train_weekend_count = 0
-#     for i in range(predict_data_delta+1):
-#         if (predict_date_start+datetime.timedelta(i)).isoweekday()<6:
-#             predict_weekday_count += 1
-#         else:
-#             predict_weekend_count += 1
-#     #统计train中周中周末数
-#     for i in range(train_days_delta+1):
-#         if (predict_date_start-datetime.timedelta(train_days_delta+1-i)).isoweekday()<6:
-#             train_weekday_count += 1
-#         else:
-#             train_weekend_count += 1
-#
-#     #目前 1.4效果最佳
-#     predict_weekday_weekend_index = float(predict_weekend_count+1.4*predict_weekday_count)/float(predict_weekend_count+predict_weekday_count)
-#     train_weekday_weekend_index = float(train_weekend_count + 1.4 * train_weekday_count) / float(train_weekend_count + train_weekday_count)
-#
-#     for index in range(flavor_type_num):
-#         predict_flavor_num.append(0)
-#         for item in esc_data:
-#             if item[1] == flavor_type[index] and item[2] + datetime.timedelta(train_days_delta) >= predict_date_start:
-#                 predict_flavor_num[index] = predict_flavor_num[index] + 1
-#                 #                predict_flavor_num[index] = predict_flavor_num[index] + 2-1.9*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
-#                 test_date = item[2]
-#                 test1 = float((predict_date_start - item[2]).days)
-#                 test = float((predict_date_start - item[2]).days) / float(train_days_delta)
-#                 pass
-#     for index in range(flavor_type_num):
-#         predict_flavor_num[index] = (predict_flavor_num[index] * float(predict_data_delta + 1)) / train_days_delta
-# #        predict_flavor_num[index] = int(predict_flavor_num[index] * (float(predict_weekday_count)/(float(predict_weekday_count+predict_weekend_count))) / (float(train_weekday_count)/(float(train_weekday_count+train_weekend_count))))
-#         predict_flavor_num[index] = int(predict_flavor_num[index]*predict_weekday_weekend_index/train_weekday_weekend_index)
-#
+    #predict 统计周末周中权重
 
-    #predict 线性回归
-    flavor_num = []
-    for i in range(flavor_type_num):
-        flavor_num.append([])
-        for j in range((train_date_end - train_date_start).days + 1):
-            flavor_num[i].append(0)
+    train_days_delta = 6
+    #统计predict中周中周末数
+    predict_weekday_count = 0
+    predict_weekend_count = 0
+    train_weekday_count = 0
+    train_weekend_count = 0
+    for i in range(predict_data_delta+1):
+        if (predict_date_start+datetime.timedelta(i)).isoweekday()<6:
+            predict_weekday_count += 1
+        else:
+            predict_weekend_count += 1
+    #统计train中周中周末数
+    for i in range(train_days_delta+1):
+        if (predict_date_start-datetime.timedelta(train_days_delta+1-i)).isoweekday()<6:
+            train_weekday_count += 1
+        else:
+            train_weekend_count += 1
 
-    for i in range(len(esc_data)):
-        ith_date = esc_data[i][2]
-        ith_date_delta = (ith_date - train_date_start).days
-        for j in range(len(flavor_type)):
-            if esc_data[i][1] == flavor_type[j]:
-                flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
+    #目前 1.4效果最佳
+    predict_weekday_weekend_index = float(predict_weekend_count+1.4*predict_weekday_count)/float(predict_weekend_count+predict_weekday_count)
+    train_weekday_weekend_index = float(train_weekend_count + 1.4 * train_weekday_count) / float(train_weekend_count + train_weekday_count)
 
-    #简单去噪
-    for i in range(flavor_type_num):
-        avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
-        for j in range(len(flavor_num[i])):
-            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
-                flavor_num[i][j] = 5*avarage_num
-            if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
-                flavor_num[i][j] = avarage_num
-            if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
-                flavor_num[i][j] = avarage_num
-            if avarage_num > 10 * flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
-                flavor_num[i][j] = 3*flavor_num[i][j]
-
-
-    date_index = []
-    for i in range((train_date_end-train_date_start).days+1):
-        date_index.append(i)
-
-    date_index_predict = []
-    for i in range((predict_date_end-predict_date_start).days+1):
-        date_index_predict.append(len(date_index)+i)
-
-    num_predict = []
     for index in range(flavor_type_num):
         predict_flavor_num.append(0)
+        for item in esc_data:
+            if item[1] == flavor_type[index] and item[2] + datetime.timedelta(train_days_delta) >= predict_date_start:
+                predict_flavor_num[index] = predict_flavor_num[index] + 1
+                #                predict_flavor_num[index] = predict_flavor_num[index] + 2-1.9*float((predict_date_start-item[2]).days-1)/float(train_days_delta)
+                test_date = item[2]
+                test1 = float((predict_date_start - item[2]).days)
+                test = float((predict_date_start - item[2]).days) / float(train_days_delta)
+                pass
+    for index in range(flavor_type_num):
+        predict_flavor_num[index] = (predict_flavor_num[index] * float(predict_data_delta + 1)) / train_days_delta
+#        predict_flavor_num[index] = int(predict_flavor_num[index] * (float(predict_weekday_count)/(float(predict_weekday_count+predict_weekend_count))) / (float(train_weekday_count)/(float(train_weekday_count+train_weekend_count))))
+        predict_flavor_num[index] = int(predict_flavor_num[index]*predict_weekday_weekend_index/train_weekday_weekend_index)
 
-        w0,w1 = utils.cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
-        num_predict.append([])
-        for i in range(len(date_index_predict)):
-            num_predict[index].append(w1*date_index_predict[i]+w0)
-        predict_flavor_num[index] = int(sum(num_predict[index]))
-    for i in range(len(predict_flavor_num)):
-        if predict_flavor_num[i]<0:
-            predict_flavor_num[i] = 0
+
+    # #predict 线性回归
+    # flavor_num = []
+    # for i in range(flavor_type_num):
+    #     flavor_num.append([])
+    #     for j in range((train_date_end - train_date_start).days + 1):
+    #         flavor_num[i].append(0)
+    #
+    # for i in range(len(esc_data)):
+    #     ith_date = esc_data[i][2]
+    #     ith_date_delta = (ith_date - train_date_start).days
+    #     for j in range(len(flavor_type)):
+    #         if esc_data[i][1] == flavor_type[j]:
+    #             flavor_num[j][ith_date_delta] = flavor_num[j][ith_date_delta] + 1
+    #
+    # #简单去噪
+    # for i in range(flavor_type_num):
+    #     avarage_num = float(sum(flavor_num[i]))/float(len(flavor_num[i]))
+    #     for j in range(len(flavor_num[i])):
+    #         if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+    #             flavor_num[i][j] = 5*avarage_num
+    #         if flavor_num[i][j] > 10*avarage_num and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
+    #             flavor_num[i][j] = avarage_num
+    #         if avarage_num > 10*flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()<6:
+    #             flavor_num[i][j] = avarage_num
+    #         if avarage_num > 10 * flavor_num[i][j] and (predict_date_start+datetime.timedelta(j)).isoweekday()>=6:
+    #             flavor_num[i][j] = 3*flavor_num[i][j]
+    #
+    #
+    # date_index = []
+    # for i in range((train_date_end-train_date_start).days+1):
+    #     date_index.append(i)
+    #
+    # date_index_predict = []
+    # for i in range((predict_date_end-predict_date_start).days+1):
+    #     date_index_predict.append(len(date_index)+i)
+    #
+    # num_predict = []
+    # for index in range(flavor_type_num):
+    #     predict_flavor_num.append(0)
+    #
+    #     w0,w1 = utils.cal_simple_linear_regression_coefficients(date_index,flavor_num[index])
+    #     num_predict.append([])
+    #     for i in range(len(date_index_predict)):
+    #         num_predict[index].append(w1*date_index_predict[i]+w0)
+    #     predict_flavor_num[index] = int(sum(num_predict[index]))
+    # for i in range(len(predict_flavor_num)):
+    #     if predict_flavor_num[i]<0:
+    #         predict_flavor_num[i] = 0
 
 
     # #predict 一次指数平滑
