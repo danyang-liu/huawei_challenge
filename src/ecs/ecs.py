@@ -40,7 +40,7 @@ def main():
     # test_infor_array = read_lines(testFilePath)
     # testresult = predictor.test_vm(test_infor_array,input_file_array,predic_result)
     # print testresult
-    #
+
 
     print 'main function end.'
 
